@@ -10,16 +10,16 @@ phases:
 
   pre_build:
     commands:
-      - echo Pre-build phase
       - echo "Baixando e Instalando OWASP Dependency-Check..."
       - curl -s -L https://github.com/jeremylong/DependencyCheck/releases/download/v8.2.1/dependency-check-8.2.1-release.zip -o dependency-check.zip
-      - unzip dependency-check.zip -d dependency-check
-      - chmod +x dependency-check/bin/dependency-check.sh
+      - unzip dependency-check.zip
+      - chmod +x dependency-check/dependency-check/bin/dependency-check.sh  
+
 
   build:
     commands:
       - echo Running OWASP Dependency-Check...
-      - /usr/local/bin/dependency-check/dependency-check.sh --project "MeuProjeto" --scan . --format HTML --out reports/
+      - dependency-check/dependency-check/bin/dependency-check.sh --project "MeuProjeto" --scan . --format HTML --out reports/
       - echo Build phase
       - npm run build
 
