@@ -2,20 +2,21 @@ version: 0.2
 
 phases:
 
-  install:
-    runtime-versions:
-      nodejs: 14
-      java: corretto17  
-    commands:
-      - echo "Installing NPM dependencies..."
-      - npm install
-      - echo "Instalando OWASP Dependency-Check..."
-      - curl -sLO https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip
-      - yum install -y unzip || apt-get install -y unzip
-      - unzip dependency-check-9.0.9-release.zip
-      - ls dependency-check-9.0.9-release/bin/
-      - ls -R
-      - chmod +x dependency-check-9.0.9/bin/dependency-check.sh || chmod +x dependency-check/bin/dependency-check.sh
+  runtime-versions:
+    nodejs: 14
+    java: corretto17  
+  commands:
+    - echo "Installing NPM dependencies..."
+    - npm install
+    - echo "Instalando OWASP Dependency-Check..."
+    - curl -sLO https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip
+    - yum install -y unzip || apt-get install -y unzip
+    - unzip dependency-check-9.0.9-release.zip
+    - echo "Verificando diretórios extraídos..."
+    - ls -R  
+    - DEPENDENCY_CHECK_DIR=$(find . -type d -name "dependency-check*" | head -n 1)  
+    - echo "Diretório encontrado: $DEPENDENCY_CHECK_DIR"
+    - chmod +x $DEPENDENCY_CHECK_DIR/bin/dependency-check.sh
       
   pre_build:
     commands:
