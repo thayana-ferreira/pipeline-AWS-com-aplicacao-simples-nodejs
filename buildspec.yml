@@ -14,9 +14,8 @@ phases:
       - unzip dependency-check-9.0.9-release.zip
       - echo "Verificando diretórios extraídos..."
       - ls -R  # Mostra todos os arquivos extraídos para depuração
-      - echo "Definindo diretório da ferramenta..."
-      - DEPENDENCY_CHECK_DIR=$(find . -type d -name "dependency-check*" | head -n 1) && echo "Diretório encontrado: $DEPENDENCY_CHECK_DIR"
-      - chmod +x "$DEPENDENCY_CHECK_DIR/bin/dependency-check.sh"
+      - echo "Dando permissão ao script..."
+      - chmod +x $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh
 
   pre_build:
     commands:
@@ -26,7 +25,7 @@ phases:
     commands:
       - echo "Build phase"
       - echo "Rodando análise de dependências..."
-      - DEPENDENCY_CHECK_DIR=$(find . -type d -name "dependency-check*" | head -n 1) && "$DEPENDENCY_CHECK_DIR/bin/dependency-check.sh" --project "meu-projeto" --scan . --format HTML --out reports/
+      - $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/
 
   post_build:
     commands:
