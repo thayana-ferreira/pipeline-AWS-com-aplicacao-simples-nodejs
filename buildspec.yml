@@ -1,33 +1,33 @@
 version: 0.2
 
 phases:
+
   install:
     runtime-versions:
-      nodejs: 14  
+      nodejs: 14
+      java: corretto17  
     commands:
-      - echo Installing NPM dependencies...
+      - echo "Installing NPM dependencies..."
       - npm install
-
+      - echo "Instalando OWASP Dependency-Check..."
+      - curl -sLO https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip
+      - unzip dependency-check-9.0.9-release.zip
+      - chmod +x dependency-check/dependency-check/bin/dependency-check.sh  
+      
   pre_build:
     commands:
-      - echo "Baixando e Instalando OWASP Dependency-Check..."
-      - curl -s -L https://github.com/jeremylong/DependencyCheck/releases/download/v8.2.1/dependency-check-8.2.1-release.zip -o dependency-check.zip
-      - unzip dependency-check.zip
-      - chmod +x dependency-check/dependency-check/bin/dependency-check.sh  
-
-
+      - echo "Pre-build phase"
+      
   build:
     commands:
-      - echo Running OWASP Dependency-Check...
-      - dependency-check/dependency-check/bin/dependency-check.sh --project "MeuProjeto" --scan . --format HTML --out reports/
-      - echo Build phase
-      - npm run build
+      - echo "Build phase"
+      - echo "Rodando análise de dependências..."
+      - dependency-check/dependency-check/bin/dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/
 
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Checking OWASP Dependency-Check results...
-      - cat reports/dependency-check-report.html || echo "Failed to generate dependency check report"
+      - echo "Análise concluída! Salvando resultados..."
+      - aws s3 cp reports/ s3://pipeline5-trabalho-d --recursive  
 
 artifacts:
   files:
