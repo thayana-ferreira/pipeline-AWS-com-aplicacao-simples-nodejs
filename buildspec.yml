@@ -26,12 +26,15 @@ phases:
       - echo "Rodando análise de dependências..."
       - mkdir -p reports  # Garante que o diretório existe antes de rodar
       - $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/ --nvdApiKey $NVD_API_KEY || echo "Falha na análise de dependências, verificar logs."
+      - echo "Verificando se relatórios foram gerados..."
+      - ls -lah reports/
 
   post_build:
     commands:
       - echo "Análise concluída! Salvando resultados..."
       - mkdir -p reports  # Garante que o diretório existe
-      - aws s3 cp reports/ s3://pipeline5-trabalho-d --recursive || echo "Nenhum relatório encontrado para upload." 
+      - ls -lah reports/  # Lista os arquivos antes do upload
+      - aws s3 cp reports/ s3://pipeline5-trabalho-d --recursive || echo "Nenhum relatório encontrado para upload."
 
 artifacts:
   files:
