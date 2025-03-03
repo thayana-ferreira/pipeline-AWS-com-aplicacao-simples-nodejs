@@ -24,15 +24,22 @@ phases:
   build:
     commands:
       - echo "Rodando análise de dependências..."
-      - echo "API Key configurada: $NVD_API_KEY"
+      - echo "API Key configurada: ${NVD_API_KEY:-'NÃO CONFIGURADA'}"
       - mkdir -p reports  # Garante que o diretório existe antes de rodar
-      - $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/ --nvdApiKey $NVD_API_KEY --nvdApiDelay 600 || echo "Falha na análise de dependências, verificar logs."
+      - >
+        $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh
+        --project "meu-projeto"
+        --scan .
+        --format HTML
+        --out reports/
+        --nvdApiKey "$NVD_API_KEY"
+        --nvdApiDelay 600 || echo "Falha na análise de dependências, verificar logs."
 
   post_build:
     commands:
       - echo "Análise concluída! Salvando resultados..."
       - mkdir -p reports  # Garante que o diretório existe
-      - aws s3 cp reports/ s3://pipeline5-trabalho-d --recursive || echo "Nenhum relatório encontrado para upload." 
+      - aws s3 cp reports/ s3://pipeline5-trabalho-d --recursive || echo "Nenhum relatório encontrado para upload."
 
 artifacts:
   files:
