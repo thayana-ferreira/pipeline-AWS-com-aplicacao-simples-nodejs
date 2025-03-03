@@ -26,14 +26,9 @@ phases:
       - echo "Rodando análise de dependências..."
       - echo "API Key configurada: ${NVD_API_KEY:-'NÃO CONFIGURADA'}"
       - mkdir -p reports  # Garante que o diretório existe antes de rodar
-      - >
-        $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh
-        --project "meu-projeto"
-        --scan .
-        --format HTML
-        --out reports/
-        --nvdApiKey "$NVD_API_KEY"
-        --nvdApiDelay 600 || echo "Falha na análise de dependências, verificar logs."
+      - SCRIPT_PATH=$(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh
+      - echo "Executando script de análise: $SCRIPT_PATH"
+      - $SCRIPT_PATH --project "meu-projeto" --scan . --format HTML --out reports/ --nvdApiKey "$NVD_API_KEY" --nvdApiDelay 600 || echo "Falha na análise de dependências, verificar logs."
 
   post_build:
     commands:
