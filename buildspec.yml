@@ -28,16 +28,20 @@ phases:
       
       - echo "Rodando análise de dependências no modo DEBUG..."
       - echo "API Key configurada:${NVD_API_KEY:-'NÃO CONFIGURADA'}"
-      - env | grep NVD  # Verifica se a variável de ambiente da API está corretamente definida
+      - env | grep NVD
 
-      - mkdir -p reports  # Cria o diretório de relatórios se não existir
-      
+      - mkdir -p reports
       - echo "Verificando versão do OWASP Dependency Check..."
-      - export DEPCHECK_DIR="./app/dependency-check"  # Define a variável apontando para o diretório correto
-      - $DEPCHECK_DIR/bin/dependency-check.sh --version  # Exibe a versão do Dependency-Check
-
+      
+      # Adicionando logs de depuração
+      - ls -lah ./app/dependency-check/bin/
+      
+      # Garantindo permissão de execução
+      - chmod +x ./app/dependency-check/bin/dependency-check.sh
+      - ./app/dependency-check/bin/dependency-check.sh --version
+      
       - echo "Executando análise com logs detalhados..."
-      - $DEPCHECK_DIR/bin/dependency-check.sh \
+      - ./app/dependency-check/bin/dependency-check.sh \
           --project "meu-projeto" \
           --scan "." \
           --format "HTML" \
@@ -46,6 +50,7 @@ phases:
           --nvdApiDelay 2000 \
           --log "reports/dependency-check.log" \
           --debug || echo "Falha na análise de dependências, verificar logs."
+
 
          # - DEPCHECK_DIR="./app/dependency-check/bin/dependency-check.sh" \  # Caminho para o script de análise
          #     --project "meu-projeto" \  # Nome do projeto analisado
