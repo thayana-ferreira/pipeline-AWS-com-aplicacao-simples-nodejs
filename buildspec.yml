@@ -33,7 +33,7 @@ phases:
       - echo "Verificando versão do OWASP Dependency Check..."
 
       # Define o caminho correto para o Dependency-Check
-      - DEP_CHECK_DIR=$(find . -type d -name "dependency-check*" | head -n 1)
+      - export DEP_CHECK_DIR=$(find . -type d -name "dependency-check*" | head -n 1)
       - echo "Dependency-Check encontrado em: $DEP_CHECK_DIR"
 
       # Lista os arquivos para depuração
@@ -44,7 +44,16 @@ phases:
       - $DEP_CHECK_DIR/bin/dependency-check.sh --version
 
       - echo "Executando análise com logs detalhados..."
-      - $DEP_CHECK_DIR/bin/dependency-check.sh --project "meu-projeto" --scan "." --format "HTML" --out "reports/" --nvdApiKey "$NVD_API_KEY" --nvdApiDelay 2000 --log "reports/dependency-check.log" --debug || echo "Falha na análise de dependências, verificar logs."
+      - |
+        $DEP_CHECK_DIR/bin/dependency-check.sh \
+          --project "meu-projeto" \
+          --scan "." \
+          --format "HTML" \
+          --out "reports/" \
+          --nvdApiKey "$NVD_API_KEY" \
+          --nvdApiDelay 2000 \
+          --log "reports/dependency-check.log" \
+          --debug || echo "Falha na análise de dependências, verificar logs."
 
   post_build:
     commands:
