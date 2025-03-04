@@ -28,7 +28,7 @@ phases:
       - echo "API Key configurada:${NVD_API_KEY:-'NÃO CONFIGURADA'}"
       - env | grep NVD  # Mostra se a variável está definida corretamente
       - mkdir -p reports  # Garante que o diretório existe antes de rodar
-      - $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/ --nvdApiKey $NVD_API_KEY || echo "Falha na análise de dependências, verificar logs."
+      - $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/ --nvdApiKey "$NVD_API_KEY" --nvdApiDelay 2000 || echo "Falha na análise de dependências, verificar logs."
       - echo "Verificando se relatórios foram gerados..."
       - ls -lah reports/
 
