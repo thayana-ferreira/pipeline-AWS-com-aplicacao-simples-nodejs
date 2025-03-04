@@ -34,7 +34,7 @@ phases:
       - $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh --version
       - echo "Executando análise com logs detalhados..."
       - DEPCHECK_DIR=$(find . -type d -name "dependency-check*" | head -n 1)
-      - $DEPCHECK_DIR/bin/dependency-check.sh \
+      - DEPCHECK_DIR="./app/dependency-check/bin/dependency-check.sh" \
           --project "meu-projeto" \
           --scan "." \
           --format "HTML" \
