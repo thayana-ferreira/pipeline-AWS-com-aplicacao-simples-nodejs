@@ -40,7 +40,7 @@ phases:
           --out "reports/" \
           --nvdApiKey="$NVD_API_KEY" \
           --nvdApiDelay 2000 \
-          --log "reports/dependency-check.log" \
+          --log "reports/dependency-check.log" #\
           #--debug || echo "Falha na análise de dependências, verificar logs."
 
          # - DEPCHECK_DIR="./app/dependency-check/bin/dependency-check.sh" \  # Caminho para o script de análise
