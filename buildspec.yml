@@ -11,7 +11,7 @@ phases:
       - echo "Instalando OWASP Dependency-Check..."
       - curl -sLO https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip
       - yum install -y unzip || apt-get install -y unzip
-      - unzip dependency-check-9.0.9-release.zip -d ./app  # Extraindo para ./app
+      - unzip dependency-check-9.0.9-release.zip -d ./app
       - echo "Verificando diretórios extraídos..."
       - ls -R ./app
       - echo "Dando permissão ao script..."
@@ -26,24 +26,25 @@ phases:
       - echo "Testando conexão manual com API da NVD usando a chave..."
       - curl -H "apiKey:$NVD_API_KEY" "https://services.nvd.nist.gov/rest/json/cves/2.0" || echo "Erro ao acessar API manualmente"
 
-      - echo "Rodando análise de dependências no modo DEBUG..."
+      - echo "Verificando API Key..."
       - echo "API Key configurada:${NVD_API_KEY:-'NÃO CONFIGURADA'}"
-      - env | grep NVD
 
       - mkdir -p reports
-      - echo "Verificando estrutura de diretórios..."
-      - ls -lah .  # Lista diretórios
-      - find . -type d -name "dependency-check*"
+      - chmod -R 777 reports  # Permissão temporária para depuração
 
       - echo "Definindo caminho correto para OWASP Dependency-Check..."
       - export DEPCHECK_DIR=$(find ./app -type d -name "dependency-check*" | head -n 1)
       - echo "Dependency-Check encontrado em:$DEPCHECK_DIR"
+      - ls -lah $DEPCHECK_DIR/bin/dependency-check.sh
 
       - echo "Dando permissão ao script..."
       - chmod +x $DEPCHECK_DIR/bin/dependency-check.sh
 
       - echo "Verificando versão do OWASP Dependency-Check..."
       - $DEPCHECK_DIR/bin/dependency-check.sh --version
+
+      - echo "Aumentando memória para Dependency-Check..."
+      - export JAVA_OPTS="-Xmx2048m"
 
       - echo "Executando análise com logs detalhados..."
       - >
@@ -56,10 +57,12 @@ phases:
         --nvdApiDelay 2000
         --log "reports/dependency-check.log"
 
+      - echo "Verificando logs..."
+      - cat reports/dependency-check.log
+
   post_build:
     commands:
       - echo "Análise concluída! Salvando resultados..."
-      - mkdir -p reports
       - ls -lah reports/
       - aws s3 cp reports/ s3://pipeline5-trabalho-d --recursive || echo "Nenhum relatório encontrado para upload."
 
