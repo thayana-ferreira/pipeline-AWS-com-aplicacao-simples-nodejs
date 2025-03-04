@@ -37,7 +37,7 @@ phases:
 
       - echo "Definindo caminho correto para OWASP Dependency-Check..."
       - export DEPCHECK_DIR=$(find ./app -type d -name "dependency-check*" | head -n 1)
-      - echo "Dependency-Check encontrado em: $DEPCHECK_DIR"
+      - echo "Dependency-Check encontrado em:$DEPCHECK_DIR"
 
       - echo "Dando permissão ao script..."
       - chmod +x $DEPCHECK_DIR/bin/dependency-check.sh
@@ -46,14 +46,14 @@ phases:
       - $DEPCHECK_DIR/bin/dependency-check.sh --version
 
       - echo "Executando análise com logs detalhados..."
-      - |
-        $DEPCHECK_DIR/bin/dependency-check.sh \
-        --project "meu-projeto" \
-        --scan "." \
-        --format "HTML" \
-        --out "reports/" \
-        --nvdApiKey "$NVD_API_KEY" \
-        --nvdApiDelay 2000 \
+      - >
+        $DEPCHECK_DIR/bin/dependency-check.sh
+        --project "meu-projeto"
+        --scan "."
+        --format "HTML"
+        --out "reports/"
+        --nvdApiKey "$NVD_API_KEY"
+        --nvdApiDelay 2000
         --log "reports/dependency-check.log"
 
   post_build:
