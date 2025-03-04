@@ -24,18 +24,26 @@ phases:
 
   build:
     commands:
-      #- echo "Verificando conectividade com a NVD..."
-      #- curl -I https://services.nvd.nist.gov/rest/json/cves/2.0 || echo "Falha ao conectar com a NVD"
       - echo "Testando conexão manual com API da NVD usando a chave..."
       - curl -H "apiKey:$NVD_API_KEY" "https://services.nvd.nist.gov/rest/json/cves/2.0" || echo "Erro ao acessar API manualmente"
-      - echo "Rodando análise de dependências..."
+      - echo "Rodando análise de dependências no modo DEBUG..."
       - echo "API Key configurada:${NVD_API_KEY:-'NÃO CONFIGURADA'}"
       - env | grep NVD  # Mostra se a variável está definida corretamente
       - mkdir -p reports  # Garante que o diretório existe antes de rodar
-      - $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh --project "meu-projeto" --scan . --format HTML --out reports/ --nvdApiKey "$NVD_API_KEY" --nvdApiDelay 2000 || echo "Falha na análise de dependências, verificar logs."
+      - echo "Verificando versão do OWASP Dependency Check..."
+      - $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh --version
+      - echo "Executando análise com logs detalhados..."
+      - $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh \
+          --project "meu-projeto" \
+          --scan . \
+          --format HTML \
+          --out reports/ \
+          --nvdApiKey "$NVD_API_KEY" \
+          --nvdApiDelay 2000 \
+          --debug || echo "Falha na análise de dependências, verificar logs."
       - echo "Verificando se relatórios foram gerados..."
       - ls -lah reports/
-
+    
   post_build:
     commands:
       - echo "Análise concluída! Salvando resultados..."
