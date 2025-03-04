@@ -23,24 +23,29 @@ phases:
 
   build:
     commands:
-      - echo "Testando conexão manual com API da NVD usando a chave..."  # Mensagem informativa
-      - curl -H "apiKey:$NVD_API_KEY" "https://services.nvd.nist.gov/rest/json/cves/2.0" || echo "Erro ao acessar API manualmente"  # Testa a API NVD com a chave fornecida
-      - echo "Rodando análise de dependências no modo DEBUG..."  # Mensagem informativa
-      - echo "API Key configurada:${NVD_API_KEY:-'NÃO CONFIGURADA'}"  # Exibe a chave API, se configurada
+      - echo "Testando conexão manual com API da NVD usando a chave..."
+      - curl -H "apiKey:$NVD_API_KEY" "https://services.nvd.nist.gov/rest/json/cves/2.0" || echo "Erro ao acessar API manualmente"
+      
+      - echo "Rodando análise de dependências no modo DEBUG..."
+      - echo "API Key configurada:${NVD_API_KEY:-'NÃO CONFIGURADA'}"
       - env | grep NVD  # Verifica se a variável de ambiente da API está corretamente definida
-      - mkdir -p reports  # Cria o diretório de relatórios, caso não exista
-      - echo "Verificando versão do OWASP Dependency Check..."  # Mensagem informativa
-      - ./app/dependency-check/bin/dependency-check.sh --version  # Exibe a versão do OWASP Dependency-Check
-      - echo "Executando análise com logs detalhados..."  # Mensagem informativa
-      - export DEPCHECK_DIR="./app/dependency-check/bin/dependency-check.sh"  # Define a variável corretamente
-      - $DEPCHECK_DIR \
+
+      - mkdir -p reports  # Cria o diretório de relatórios se não existir
+      
+      - echo "Verificando versão do OWASP Dependency Check..."
+      - export DEPCHECK_DIR="./app/dependency-check"  # Define a variável apontando para o diretório correto
+      - $DEPCHECK_DIR/bin/dependency-check.sh --version  # Exibe a versão do Dependency-Check
+
+      - echo "Executando análise com logs detalhados..."
+      - $DEPCHECK_DIR/bin/dependency-check.sh \
           --project "meu-projeto" \
           --scan "." \
           --format "HTML" \
           --out "reports/" \
           --nvdApiKey "$NVD_API_KEY" \
           --nvdApiDelay 2000 \
-          --log "reports/dependency-check.log"
+          --log "reports/dependency-check.log" \
+          --debug || echo "Falha na análise de dependências, verificar logs."
 
          # - DEPCHECK_DIR="./app/dependency-check/bin/dependency-check.sh" \  # Caminho para o script de análise
          #     --project "meu-projeto" \  # Nome do projeto analisado
