@@ -30,18 +30,17 @@ phases:
       - env | grep NVD  # Verifica se a variável de ambiente da API está corretamente definida
       - mkdir -p reports  # Cria o diretório de relatórios, caso não exista
       - echo "Verificando versão do OWASP Dependency Check..."  # Mensagem informativa
-      - $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh --version  # Exibe a versão do OWASP Dependency-Check
+      - ./app/dependency-check/bin/dependency-check.sh --version  # Exibe a versão do OWASP Dependency-Check
       - echo "Executando análise com logs detalhados..."  # Mensagem informativa
-      - DEPCHECK_DIR=$(find . -type d -name "dependency-check*" | head -n 1)  # Define a variável com o caminho do diretório
-      - DEPCHECK_DIR="./app/dependency-check/bin/dependency-check.sh" \
+      - export DEPCHECK_DIR="./app/dependency-check/bin/dependency-check.sh"  # Define a variável corretamente
+      - $DEPCHECK_DIR \
           --project "meu-projeto" \
           --scan "." \
           --format "HTML" \
           --out "reports/" \
-          --nvdApiKey="$NVD_API_KEY" \
+          --nvdApiKey "$NVD_API_KEY" \
           --nvdApiDelay 2000 \
-          --log "reports/dependency-check.log" #\
-          #--debug || echo "Falha na análise de dependências, verificar logs."
+          --log "reports/dependency-check.log"
 
          # - DEPCHECK_DIR="./app/dependency-check/bin/dependency-check.sh" \  # Caminho para o script de análise
          #     --project "meu-projeto" \  # Nome do projeto analisado
