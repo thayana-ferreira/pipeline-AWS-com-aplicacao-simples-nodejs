@@ -24,6 +24,8 @@ phases:
 
   build:
     commands:
+      - echo "Verificando conectividade com a NVD..."
+      - curl -I https://services.nvd.nist.gov/rest/json/cves/2.0 || echo "Falha ao conectar com a NVD"
       - echo "Rodando análise de dependências..."
       - echo "API Key configurada:${NVD_API_KEY:-'NÃO CONFIGURADA'}"
       - env | grep NVD  # Mostra se a variável está definida corretamente
