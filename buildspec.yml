@@ -20,6 +20,8 @@ phases:
   pre_build:
     commands:
       - echo "Pre-build phase"
+      - echo "Criando diretório reports..."
+      - mkdir -p reports
 
   build:
     commands:
@@ -30,7 +32,6 @@ phases:
       - echo "API Key configurada:${NVD_API_KEY:-'NÃO CONFIGURADA'}"
       - env | grep NVD
 
-      - mkdir -p reports
       - echo "Verificando versão do OWASP Dependency Check..."
       - $(find . -type d -name "dependency-check*" | head -n 1)/bin/dependency-check.sh --version
 
@@ -49,10 +50,11 @@ phases:
   post_build:
     commands:
       - echo "Análise concluída! Salvando resultados..."
+      - echo "Conteúdo do diretório reports:"
       - ls -lah reports/
+      - echo "Fazendo upload dos relatórios para o S3..."
       - aws s3 cp reports/ s3://pipeline5-trabalho-d --recursive || echo "Nenhum relatório encontrado para upload."
 
 artifacts:
   files:
     - '**/*'
-    
